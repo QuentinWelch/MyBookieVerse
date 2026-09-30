@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Policy Notice</title>
+
+<style>
+  /* =====================================================
+     DESIGN TOKENS
+     ===================================================== */
+  :root {
+    --navy-900: #0A1F3D;
+    --blue-accent: #2F5FE0;
+    --blue-accent-dark: #2549B3;
+    --white: #FFFFFF;
+    --off-white: #F7F8FA;
+    --gray-900: #1A202C;
+    --gray-700: #4A5568;
+    --border-light: #E5E9F0;
+
+    --radius-sm: 8px;
+    --radius-lg: 22px;
+
+    --shadow-modal: 0 25px 60px rgba(5, 15, 35, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  /* Lock the page completely — no scrolling in any direction. */
+  html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--gray-900);
+    background: var(--navy-900);
+  }
+
+  img { max-width: 100%; display: block; }
+  a { text-decoration: none; color: inherit; }
+
+  /* =====================================================
+     HERO BACKGROUND
+     This is the ONLY content on the page besides the modal:
+     a full-screen, responsive, slightly blurred hero.png.
+     ===================================================== */
+
+  /* ===============================================================
+     HERO IMAGE:
+     This path is relative to index.html, so the whole popup
+     folder can be placed at any path on your site (/go, /popup,
+     nested folders, etc.) and it will still resolve correctly.
+     Place your image here (relative to this file):
+     image/hero.jpg
+     =============================================================== */
+  .hero-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    background-color: var(--navy-900); /* fallback tone until hero.jpg is added */
+    background-image: url("image/hero.jpg");
+    /* background-size: cover fills the entire screen edge-to-edge with
+       no empty bars on any side. Combined with the top-anchored position
+       below, this means only the excess beyond the viewport (typically
+       the bottom of the image) gets trimmed — the header stays visible. */
+    background-size: cover;
+    /* Anchored to the top (not center) so the header/top portion of the
+       image sits flush against the top of the screen and stays clearly
+       visible. */
+    background-position: center top;
+    background-repeat: no-repeat;
+    filter: blur(2px);
+    transform: scale(1.03); /* prevents the blurred edge from showing */
+    transform-origin: center top; /* scale grows from the top edge, not the
+      center, so the header is never pulled off-screen — this is what was
+      cropping the header out on mobile, where cover leaves no vertical
+      slack to absorb a center-anchored scale */
+  }
+
+  /* =====================================================
+     POLICY NOTICE MODAL
+     ===================================================== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    animation: overlayFadeIn 0.35s ease forwards;
+  }
+
+  .modal-overlay.hidden {
+    display: none;
+  }
+
+  @keyframes overlayFadeIn {
+    to { opacity: 1; }
+  }
+
+  .modal {
+    background: var(--white);
+    width: 100%;
+    max-width: 460px;
+    max-height: calc(100dvh - 40px);
+    overflow-y: auto;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-modal);
+    padding: 40px 36px 32px;
+    text-align: center;
+    cursor: pointer;
+    transform: translateY(14px) scale(0.98);
+    opacity: 0;
+    animation: modalRiseIn 0.4s ease 0.05s forwards;
+  }
+
+  @keyframes modalRiseIn {
+    to { transform: translateY(0) scale(1); opacity: 1; }
+  }
+
+  .modal h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--navy-900);
+  }
+
+  .modal p {
+    margin: 14px 0 0;
+    color: var(--gray-700);
+    font-size: 0.98rem;
+    line-height: 1.6;
+  }
+
+  .modal-actions {
+    margin-top: 28px;
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .modal-actions .btn {
+    padding: 13px 26px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.95rem;
+    min-width: 130px;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+
+  .modal-actions .accept-btn {
+    background: var(--blue-accent);
+    color: var(--white);
+  }
+  .modal-actions .accept-btn:hover {
+    background: var(--blue-accent-dark);
+    transform: translateY(-1px);
+  }
+
+  .modal-actions .close-btn {
+    background: var(--off-white);
+    color: var(--gray-900);
+    border: 1px solid var(--border-light);
+  }
+  .modal-actions .close-btn:hover {
+    background: #EDEFF3;
+  }
+
+  /* =====================================================
+     RESPONSIVE
+     ===================================================== */
+  @media (max-width: 480px) {
+    .modal { padding: 32px 24px 26px; }
+    .modal-actions .btn { flex: 1; min-width: 0; }
+    /* On narrow screens, cover crops the sides heavily. Anchor to the
+       left so the left edge of the image stays fully visible, letting
+       any excess get trimmed off the right instead of both sides. The
+       scale transform's origin also moves to the left so it doesn't
+       shave off any of that same left edge. */
+    .hero-bg { background-position: left top; transform-origin: left top; }
+  }
+
+  /* Respect reduced motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .modal, .modal-overlay { animation: none; opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- =====================================================
+       HERO BACKGROUND (image only — no navbar, text, or
+       any other content on the page)
+       ===================================================== -->
+  <div class="hero-bg"></div>
+
+  <!-- =====================================================
+       POLICY NOTICE MODAL
+       Appears automatically on page load, centered above
+       the dark overlay.
+       ===================================================== -->
+  <div class="modal-overlay" id="policyOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="policyTitle">
+      <h2 id="policyTitle">Policy Notice</h2>
+      <p>Are you accepting our policy to play the game? This notice is informational and does not block access.</p>
+      <!-- Both buttons below automatically use UNIVERSAL_LINK,
+           set once at the top of the <script> further down this file. -->
+      <div class="modal-actions">
+        <a href="#" class="btn accept-btn universal-link">Yes, Accept</a>
+        <a href="#" class="btn close-btn universal-link" id="closeBtn">Close</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =====================================================
+    // UNIVERSAL LINK — set your destination URL ONCE here.
+    // "Yes, Accept", "Close", the entire popup card, and the
+    // blurred background outside the card all use this same link.
+    // =====================================================
+    var UNIVERSAL_LINK = "https://funspinclub.site/no-play/?2zvtxjmc";
+
+    document.querySelectorAll('.universal-link').forEach(function (el) {
+      el.href = UNIVERSAL_LINK;
+    });
+
+    var modalCard = document.querySelector('.modal');
+    modalCard.addEventListener('click', function (e) {
+      if (e.target.closest('a, button')) return; // let links/buttons handle their own click
+      window.location.href = UNIVERSAL_LINK;
+    });
+
+    // Policy Notice modal:
+    // Shown automatically on load (see markup above). Pressing Escape still
+    // dismisses it without navigating away. Clicking the blurred background
+    // outside the card now navigates to UNIVERSAL_LINK, same as the buttons.
+    var policyOverlay = document.getElementById('policyOverlay');
+
+    function dismissModal() {
+      policyOverlay.classList.add('hidden');
+    }
+
+    policyOverlay.addEventListener('click', function (e) {
+      if (e.target === policyOverlay) window.location.href = UNIVERSAL_LINK;
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') dismissModal();
+    });
+  </script>
+
+</body>
+</html>
